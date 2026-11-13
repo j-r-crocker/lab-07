@@ -27,7 +27,18 @@ glimpse(college_grad_df)
 # Exercise 1: Exploratory Data Analysis
 
 ```{r}
-#your code here
+
+avrmed <- college_grad_df %>%
+  group_by(major_category) %>%
+  summarise(median_avr = mean(median))
+  
+  # Engineering has the highest median earnings
+
+college_grad_df %>%
+group_by(major_category) %>%
+  ggplot(aes(x=median)) +
+  geom_histogram()
+
 ```
 
 *Your explanation*
@@ -36,16 +47,43 @@ glimpse(college_grad_df)
 # Exercise 2: Exploring relationship
 
 ```{r}
-#your code here
+
+college_grad_df %>%
+ggplot(aes(x= sharewomen, y = median)) +
+         geom_point() +
+         geom_smooth(method = "lm", se=FALSE) +
+  labs( 
+    title = "Majors share of women vs median earnings ",
+       x= "Share of Women",
+    y = "Median Earnings")
+
+
 ```
 
-*Your explanation*
+The scatterplot shows that as the share of women increases the median earnings decrease
 
 # Exercise 3: Fit and interpret a numerical predictor
 
 ```{r}
-#your code here
+share_fit <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit(median ~ sharewomen, data = college_grad_df)
+
+share_fit %>%
+  tidy()
+share_fit_aug <- augment(share_fit$fit)
+
+ggplot(share_fit_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "black", lty = "dashed") +
+  labs(x = "Predicted Median", y = "Residuals")
+
+
 ```
+
+
+median earnings = 56093.31 - (30669.94 x sharewomen)
+
 
 *Your explanation*
 
